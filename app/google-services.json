@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "994643425919",
+    "firebase_url": "https://talktudy.firebaseio.com",
+    "project_id": "talktudy",
+    "storage_bucket": "talktudy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:994643425919:android:f18702c478990a78605d4a",
+        "android_client_info": {
+          "package_name": "jeong_won_hyeok.inhatc.talktudy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "994643425919-3je6b6gadrn4cq9v7thb6rlvfgpb6uvv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "jeong_won_hyeok.inhatc.talktudy",
+            "certificate_hash": "5c7dd61f0fe927a42100b2d214f1361bb37a17bc"
+          }
+        },
+        {
+          "client_id": "994643425919-opthmkovg51mb41d37d40u5hc9cbnrj7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzq8wa5o9ZtX5fme9HCsIslk2oHhrMttY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "994643425919-opthmkovg51mb41d37d40u5hc9cbnrj7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

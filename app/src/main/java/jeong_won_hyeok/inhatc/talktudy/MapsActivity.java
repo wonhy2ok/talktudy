@@ -54,7 +54,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
+public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef;
 
@@ -78,6 +78,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location location;
     private View mLayout;
 
+    Boolean recur;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +87,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         backPressHandler = new BackPressHandler(this);
         myRef = database.getReference("list");
+        recur=false;
 
         add=(FloatingActionButton)findViewById(R.id.add);
         add.setOnClickListener(new View.OnClickListener() {
@@ -140,20 +143,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                Log.d( TAG, "onMapClick :");
-            }
-        });
 
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    Double lat = Double.parseDouble(child.child("lat").getValue().toString());
-                    Double lng = Double.parseDouble(child.child("long").getValue().toString());
-                    String title = child.child("title").getValue().toString();
+                for (DataSnapshot c : dataSnapshot.getChildren()) {
+                    Double lat = Double.parseDouble(c.child("lat").getValue().toString());
+                    Double lng = Double.parseDouble(c.child("long").getValue().toString());
+                    String title = c.child("title").getValue().toString();
                     LatLng m = new LatLng(lat, lng);
                     mMap.addMarker(new MarkerOptions().position(m).title(title));
                 }
@@ -164,6 +161,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
+
+        mMap.setOnMarkerClickListener(this);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    String tit = child.child("title").getValue().toString();
+                    String con = child.child("content").getValue().toString();
+                    String p = child.child("place").getValue().toString();
+                    String nm = child.child("name").getValue().toString();
+                    String dt = child.child("date").getValue().toString();
+                    String lin = child.child("link").getValue().toString();
+                    String dt2 = child.child("date2").getValue().toString();
+
+                    InfoDialog(tit, con, p, nm, lin, dt, dt2);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        return true;
     }
 
     @Override public void onBackPressed() {
@@ -212,12 +238,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dlg.show();
     }
 
+    public void InfoDialog(String tit, String con, String p, String nm, String lin, String dt, String dt2) {
+        View dlgView = View.inflate(this,R.layout.dialog_info,null);
+        final Dialog dlg = new Dialog(this);
+        dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dlg.setContentView(dlgView);
+        TextView ok;
+        final TextView title, content, place, link, name, date, date2;
+
+        ok = (TextView)dlgView.findViewById(R.id.ok_bt);
+        title = (TextView)dlgView.findViewById(R.id.title);
+        content = (TextView)dlgView.findViewById(R.id.content);
+        place = (TextView)dlgView.findViewById(R.id.place);
+        name = (TextView)dlgView.findViewById(R.id.name);
+        link = (TextView)dlgView.findViewById(R.id.link);
+        date = (TextView)dlgView.findViewById(R.id.date);
+        date2 = (TextView)dlgView.findViewById(R.id.date2);
+
+        title.setText(tit);
+        content.setText(con);
+        place.setText(p);
+        name.setText(nm);
+        link.setText(lin);
+        date.setText(dt);
+        date2.setText(dt2);
+
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlg.dismiss();
+            }
+        });
+
+        dlg.show();
+    }
+
     LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             super.onLocationResult(locationResult);
             List<Location> locationList = locationResult.getLocations();
-            if (locationList.size() > 0) {
+            if (locationList.size() > 0 && !recur) {
                 location = locationList.get(locationList.size() - 1);
                 //location = locationList.get(0);
                 currentPosition
@@ -229,6 +290,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //현재 위치에 마커 생성하고 이동
                 setCurrentLocation(location, markerTitle, markerSnippet);
                 mCurrentLocatiion = location;
+                recur=true;
             }
         }
     };
@@ -311,6 +373,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
         if (currentMarker != null) currentMarker.remove();
+
         LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(currentLatLng);
@@ -324,10 +387,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         CircleOptions circle = new CircleOptions().center(currentLatLng)
                 .radius(1000)      //반지름 단위 : m
                 .strokeWidth(0f)  //선너비 0f : 선없음
-                .fillColor(Color.parseColor("#111187cf")); //배경색
+                .fillColor(Color.parseColor("#221187cf")); //배경색
 
         mMap.addCircle(circle);
-
 
     }
 

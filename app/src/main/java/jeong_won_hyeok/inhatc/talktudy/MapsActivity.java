@@ -179,7 +179,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                     String dt = child.child("date").getValue().toString();
                     String lin = child.child("link").getValue().toString();
                     String dt2 = child.child("date2").getValue().toString();
-
                     InfoDialog(tit, con, p, nm, lin, dt, dt2);
                 }
             }

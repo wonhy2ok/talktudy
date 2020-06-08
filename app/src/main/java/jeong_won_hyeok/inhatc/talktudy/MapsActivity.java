@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,10 +53,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
-public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef;
 
@@ -152,7 +156,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                     Double lng = Double.parseDouble(c.child("long").getValue().toString());
                     String title = c.child("title").getValue().toString();
                     LatLng m = new LatLng(lat, lng);
-                    mMap.addMarker(new MarkerOptions().position(m).title(title));
+                    mMap.addMarker(new MarkerOptions().position(m).title(title).snippet("상세 보기"));
                 }
             }
 
@@ -162,34 +166,36 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             }
         });
 
-        mMap.setOnMarkerClickListener(this);
+        mMap.setOnInfoWindowClickListener(infoWindowClickListener);
     }
 
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    String tit = child.child("title").getValue().toString();
-                    String con = child.child("content").getValue().toString();
-                    String p = child.child("place").getValue().toString();
-                    String nm = child.child("name").getValue().toString();
-                    String dt = child.child("date").getValue().toString();
-                    String lin = child.child("link").getValue().toString();
-                    String dt2 = child.child("date2").getValue().toString();
-                    InfoDialog(tit, con, p, nm, lin, dt, dt2);
+    GoogleMap.OnInfoWindowClickListener infoWindowClickListener = new GoogleMap.OnInfoWindowClickListener() {
+        @Override
+        public void onInfoWindowClick(final Marker marker) {
+            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        String tit = child.child("title").getValue().toString();
+                        if (marker.getTitle().equals(tit)) {
+                            String con = child.child("content").getValue().toString();
+                            String p = child.child("place").getValue().toString();
+                            String nm = child.child("name").getValue().toString();
+                            String dt = child.child("date").getValue().toString();
+                            String lin = child.child("link").getValue().toString();
+                            String dt2 = child.child("date2").getValue().toString();
+                            InfoDialog(tit, con, p, nm, lin, dt, dt2);
+                        }
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
-        return true;
-    }
+                }
+            });
+        }
+    };
 
     @Override public void onBackPressed() {
         backPressHandler.onBackPressed();
@@ -201,36 +207,60 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dlg.setContentView(dlgView);
         TextView ok;
-        final TextView title, content, place, link, name;
+        final TextView title, content, place, link, name, date2;
         final Button date;
 
         ok = (TextView)dlgView.findViewById(R.id.ok_bt);
         title = (TextView)dlgView.findViewById(R.id.title);
         content = (TextView)dlgView.findViewById(R.id.content);
-        place = (TextView)dlgView.findViewById(R.id.place);
+        place = (TextView)dlgView.findViewById(R.id.place);  // 위치 수정받아야함
         name = (TextView)dlgView.findViewById(R.id.name);
         link = (TextView)dlgView.findViewById(R.id.link);
         date = (Button)dlgView.findViewById(R.id.date);
+        date2 = (TextView)dlgView.findViewById(R.id.date2);
+
+        final DatePickerDialog.OnDateSetListener mDateSetListener =
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int yy, int mm, int dd) {
+                        String mm2 = (mm+1)/10 ==0 ? "0"+(mm+1) : ""+(mm+1);
+                        String dd2 = dd/10 ==0 ? "0"+dd : ""+dd;
+                        date.setText(String.format("%d-%s-%s", yy,mm2,dd2));
+                    }
+                };
 
         date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 근데 보통 스터디는 주기적으로 만날텐데 그냥 editText로 하면 안되나?
+                Calendar cal = Calendar.getInstance();
+                new DatePickerDialog(MapsActivity.this, mDateSetListener, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)).show();
             }
         });
 
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 예외처리 필요
-                String user = name.getText().toString();
-                myRef.child(user).child("title").setValue(title.getText().toString());
-                myRef.child(user).child("place").setValue(place.getText().toString());
-                myRef.child(user).child("content").setValue(content.getText().toString());
-                myRef.child(user).child("link").setValue(link.getText().toString());
+                if (title.getText().toString().equals("") || content.getText().toString().equals("") || place.getText().toString().equals("") || name.getText().toString().equals("") || date.getText().toString().equals("날짜를 선택하세요") || date2.getText().toString().equals("") || link.getText().toString().equals("")) {
+                    Toast.makeText(MapsActivity.this, "모든 항목을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    String str = date.getText().toString()+title.getText().toString();
+                    myRef.child(str).child("title").setValue(title.getText().toString());
+                    myRef.child(str).child("place").setValue(place.getText().toString());
+                    myRef.child(str).child("content").setValue(content.getText().toString());
+                    myRef.child(str).child("link").setValue(link.getText().toString());
+                    myRef.child(str).child("name").setValue(name.getText().toString());
+                    myRef.child(str).child("date").setValue(date.getText().toString());
+                    myRef.child(str).child("date2").setValue(date2.getText().toString());
+                    myRef.child(str).child("lat").setValue(location.getLatitude());  // 나중에 수정(일단 현재 위치에 마커 생성하도록 함)
+                    myRef.child(str).child("long").setValue(location.getLongitude());  // 나중에 수정22
 
-                Toast.makeText(MapsActivity.this, "등록되었습니다.", Toast.LENGTH_SHORT).show();
-                dlg.dismiss();
+                    Toast.makeText(MapsActivity.this, "등록되었습니다.", Toast.LENGTH_SHORT).show();
+                    dlg.dismiss();
+
+                    LatLng m = new LatLng(location.getLatitude(), location.getLongitude());
+                    mMap.addMarker(new MarkerOptions().position(m).title(title.getText().toString()).snippet("상세 정보 보기"));
+                }
             }
         });
 
@@ -386,7 +416,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         CircleOptions circle = new CircleOptions().center(currentLatLng)
                 .radius(1000)      //반지름 단위 : m
                 .strokeWidth(0f)  //선너비 0f : 선없음
-                .fillColor(Color.parseColor("#221187cf")); //배경색
+                .fillColor(Color.parseColor("#331187cf")); //배경색
 
         mMap.addCircle(circle);
 

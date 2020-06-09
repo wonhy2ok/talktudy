@@ -64,7 +64,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef;
 
-    FloatingActionButton add;
+    FloatingActionButton add, mode;
     private GoogleMap mMap;
     private BackPressHandler backPressHandler;
 
@@ -98,10 +98,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         recur=false;
 
         add=(FloatingActionButton)findViewById(R.id.add);
+        searchBar = (EditText)findViewById(R.id.editText);
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AddDialog();
+            }
+        });
+        mode=(FloatingActionButton)findViewById(R.id.mode);
+        mode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mode1 = new Intent(MapsActivity.this, Mode1.class);
+                startActivity(mode1);
             }
         });
 
@@ -119,9 +128,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        searchBar = (EditText)findViewById(R.id.editText);
-        searchBar.setOnKeyListener(searchAddressListener);
     }
 
     @Override
@@ -173,6 +179,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         mMap.setOnInfoWindowClickListener(infoWindowClickListener);
+        searchBar.setOnKeyListener(searchAddressListener);
     }
 
     GoogleMap.OnInfoWindowClickListener infoWindowClickListener = new GoogleMap.OnInfoWindowClickListener() {
@@ -536,9 +543,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public View.OnKeyListener searchAddressListener = new View.OnKeyListener() {
-        final Geocoder geocoder = new Geocoder(MapsActivity.this);
         @Override
         public boolean onKey(View view, int i, KeyEvent keyEvent) {
+            final Geocoder geocoder = new Geocoder(MapsActivity.this);
             switch (i) {
                 case KeyEvent.KEYCODE_ENTER:
                     List<Address> list = null;

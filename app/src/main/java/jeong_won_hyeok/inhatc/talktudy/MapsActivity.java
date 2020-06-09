@@ -6,7 +6,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -70,7 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef;
 
-    FloatingActionButton add;
+    FloatingActionButton add, mode;
     private GoogleMap mMap;
     private BackPressHandler backPressHandler;
 
@@ -110,6 +109,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 AddDialog();
             }
         });
+        mode=(FloatingActionButton)findViewById(R.id.mode);
+        mode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mode1 = new Intent(MapsActivity.this, Mode1.class);
+                startActivity(mode1);
+            }
+        });
 
         // 추가
         // https://webnautes.tistory.com/1249
@@ -127,7 +134,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         searchBar = (EditText)findViewById(R.id.editText);
-        searchBar.setOnKeyListener(searchAddressListener);
         searchBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -186,6 +192,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         mMap.setOnInfoWindowClickListener(infoWindowClickListener);
+        searchBar.setOnKeyListener(searchAddressListener);
     }
 
     GoogleMap.OnInfoWindowClickListener infoWindowClickListener = new GoogleMap.OnInfoWindowClickListener() {

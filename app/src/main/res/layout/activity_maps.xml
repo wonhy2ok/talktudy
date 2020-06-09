@@ -77,7 +77,7 @@
             android:layout_marginRight="10dp"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            map:srcCompat="@drawable/ic_search" />
+            android:src="@drawable/ic_search" />
 
     </androidx.cardview.widget.CardView>
 

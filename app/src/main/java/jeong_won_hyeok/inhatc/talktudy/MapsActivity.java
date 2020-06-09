@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -20,10 +21,14 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -123,6 +128,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         searchBar = (EditText)findViewById(R.id.editText);
         searchBar.setOnKeyListener(searchAddressListener);
+        searchBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MapsActivity.this, DaumWebViewActivity.class);
+                startActivityForResult(intent, 100);
+            }
+        });
     }
 
     @Override
@@ -534,6 +546,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
                 break;
+            case 100: // 주소 선택
+                if (resultCode == RESULT_OK)
+                    searchBar.setText(data.getStringExtra("address"));
         }
     }
 

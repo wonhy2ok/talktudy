@@ -46,7 +46,7 @@ public class DaumWebViewActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient());
 
         // webview url load
-        webView.loadUrl("http://192.168.219.104:1234/asdf.php");
+        webView.loadUrl("http://192.168.219.104:1234/qwer.php");
     }
 
     private class AndroidBridge {
@@ -55,11 +55,13 @@ public class DaumWebViewActivity extends AppCompatActivity {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    init_webView();
+
                     String address = String.format("(%s) %s %s", arg1, arg2, arg3);
                     Intent intent = new Intent();
                     intent.putExtra("address", address);
                     setResult(RESULT_OK, intent);
-                    init_webView();
+                    finish();
                 }
             });
         }

@@ -122,7 +122,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         searchBar = (EditText)findViewById(R.id.editText);
-        //searchBar.setOnKeyListener(searchAddressListener);
+        searchBar.setOnKeyListener(searchAddressListener);
     }
 
     @Override

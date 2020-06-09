@@ -21,9 +21,11 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,6 +86,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     Boolean recur;
 
+    private EditText searchBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,8 +119,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-    }
 
+        searchBar = (EditText)findViewById(R.id.editText);
+        searchBar.setOnKeyListener(searchAddressListener);
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -528,4 +534,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
         }
     }
+
+    public View.OnKeyListener searchAddressListener = new View.OnKeyListener() {
+        final Geocoder geocoder = new Geocoder(MapsActivity.this);
+        @Override
+        public boolean onKey(View view, int i, KeyEvent keyEvent) {
+            switch (i) {
+                case KeyEvent.KEYCODE_ENTER:
+                    List<Address> list = null;
+                    try {
+                        String address = searchBar.getText().toString();
+                        list = geocoder.getFromLocationName(address, 10);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (list != null) {
+                        if (list.size() == 0)
+                            Toast.makeText(MapsActivity.this, "주소 검색 불가능", Toast.LENGTH_SHORT).show();
+                        else {
+                            Address address = list.get(0);
+                            double latitude = address.getLatitude();
+                            double longitude = address.getLongitude();
+
+                            Toast.makeText(MapsActivity.this, "위도 : " + latitude + " / 경도 : " + longitude, Toast.LENGTH_LONG).show();
+                        }
+                    }
+            }
+            return true;
+        }
+    };
 }

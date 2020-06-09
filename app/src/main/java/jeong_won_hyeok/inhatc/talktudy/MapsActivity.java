@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -121,7 +122,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         searchBar = (EditText)findViewById(R.id.editText);
-        searchBar.setOnKeyListener(searchAddressListener);
+        //searchBar.setOnKeyListener(searchAddressListener);
     }
 
     @Override
@@ -316,6 +317,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (locationList.size() > 0 && !recur) {
                 location = locationList.get(locationList.size() - 1);
                 //location = locationList.get(0);
+                recur=true;
                 currentPosition
                         = new LatLng(location.getLatitude(), location.getLongitude());
                 String markerTitle = getCurrentAddress(currentPosition);
@@ -536,9 +538,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public View.OnKeyListener searchAddressListener = new View.OnKeyListener() {
-        final Geocoder geocoder = new Geocoder(MapsActivity.this);
         @Override
         public boolean onKey(View view, int i, KeyEvent keyEvent) {
+            final Geocoder geocoder = new Geocoder(MapsActivity.this);
             switch (i) {
                 case KeyEvent.KEYCODE_ENTER:
                     List<Address> list = null;

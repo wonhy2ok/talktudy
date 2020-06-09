@@ -557,11 +557,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             double latitude = address.getLatitude();
                             double longitude = address.getLongitude();
 
-                            Toast.makeText(MapsActivity.this, "위도 : " + latitude + " / 경도 : " + longitude, Toast.LENGTH_LONG).show();
+                            Toast.makeText(MapsActivity.this, "위도 : " + latitude + " / 경도 : " + longitude, Toast.LENGTH_SHORT).show();
+
+                            LatLng latLng = new LatLng(latitude, longitude);
+                            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
+                            mMap.moveCamera(cameraUpdate);
                         }
                     }
+                default:
+                    return false;
             }
-            return true;
         }
     };
 }

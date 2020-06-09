@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -323,6 +324,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (locationList.size() > 0 && !recur) {
                 location = locationList.get(locationList.size() - 1);
                 //location = locationList.get(0);
+                recur=true;
                 currentPosition
                         = new LatLng(location.getLatitude(), location.getLongitude());
                 String markerTitle = getCurrentAddress(currentPosition);
@@ -564,11 +566,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             double latitude = address.getLatitude();
                             double longitude = address.getLongitude();
 
-                            Toast.makeText(MapsActivity.this, "위도 : " + latitude + " / 경도 : " + longitude, Toast.LENGTH_LONG).show();
+                            Toast.makeText(MapsActivity.this, "위도 : " + latitude + " / 경도 : " + longitude, Toast.LENGTH_SHORT).show();
+
+                            LatLng latLng = new LatLng(latitude, longitude);
+                            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
+                            mMap.moveCamera(cameraUpdate);
                         }
                     }
+                default:
+                    return false;
             }
-            return true;
         }
     };
 }

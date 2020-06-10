@@ -92,6 +92,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Boolean recur;
 
     private EditText searchBar;
+    private Marker addMarker;
+    String addMarkerId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,7 +174,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-
+/*
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -189,10 +191,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        });*/
 
         mMap.setOnInfoWindowClickListener(infoWindowClickListener);
         searchBar.setOnKeyListener(searchAddressListener);
+
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                if (addMarker == null) {
+                    MarkerOptions addedMarker = new MarkerOptions()
+                            .position(latLng)
+                            .title("등록")
+                            .snippet("장소를 등록하실래요?");
+                    addMarker = mMap.addMarker(addedMarker);
+                    addMarkerId = addMarker.getId();
+
+                } else {
+                    addMarker.setPosition(latLng);
+                }
+            }
+        });
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if(marker.getId().equals(addMarkerId)) { // 등록 마커일 경우
+                    AddDialog();
+                }
+                return true;
+            }
+        });
     }
 
     GoogleMap.OnInfoWindowClickListener infoWindowClickListener = new GoogleMap.OnInfoWindowClickListener() {

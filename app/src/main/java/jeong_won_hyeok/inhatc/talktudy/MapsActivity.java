@@ -13,7 +13,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
@@ -81,7 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     boolean needRequest = false;
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};  // 외부 저장소
-    Location mCurrentLocatiion;
+    Location mCurrentLocation;
     LatLng currentPosition;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -103,14 +105,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         backPressHandler = new BackPressHandler(this);
         myRef = database.getReference("list");
         recur=false;
-
+        /*
         add=(FloatingActionButton)findViewById(R.id.add);
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddDialog();
+                AddDialog(location);
             }
-        });
+        });*/
         mode=(FloatingActionButton)findViewById(R.id.mode);
         mode.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,6 +183,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (DataSnapshot c : dataSnapshot.getChildren()) {
                     Double lat = Double.parseDouble(c.child("lat").getValue().toString());
                     Double lng = Double.parseDouble(c.child("long").getValue().toString());
+                    if(recur) {
+                        Double lat2 = mCurrentLocation.getLatitude();
+                        Double lng2 = mCurrentLocation.getLongitude();
+                        System.out.println("현복:거리" + getDistanceBetween(lat, lng, lat2, lng2));
+                    }
                     String title = c.child("title").getValue().toString();
                     LatLng m = new LatLng(lat, lng);
                     mMap.addMarker(new MarkerOptions().position(m).title(title).snippet("상세 보기"));
@@ -200,8 +207,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onMapLongClick(LatLng latLng) {
                 if (addMarker == null) {
+                    BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.green);
+                    Bitmap b=bitmapdraw.getBitmap();
+                    Bitmap smallMarker;
+                    smallMarker = Bitmap.createScaledBitmap(b, 96, 96, false);
                     MarkerOptions addedMarker = new MarkerOptions()
                             .position(latLng)
+                            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
                             .title("등록")
                             .snippet("장소를 등록하실래요?");
                     addMarker = mMap.addMarker(addedMarker);
@@ -217,7 +229,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public boolean onMarkerClick(Marker marker) {
                 if(marker.getId().equals(addMarkerId)) { // 등록 마커일 경우
-                    AddDialog();
+                    location.setLatitude(marker.getPosition().latitude);
+                    location.setLongitude(marker.getPosition().longitude);
+                    AddDialog(location);
                 }
                 return true;
             }
@@ -256,7 +270,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         backPressHandler.onBackPressed();
     }
 
-    public void AddDialog() {
+    public void AddDialog(final Location addLocation) {
         View dlgView = View.inflate(this,R.layout.dialog_add,null);
         final Dialog dlg = new Dialog(this);
         dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -269,6 +283,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         title = (TextView)dlgView.findViewById(R.id.title);
         content = (TextView)dlgView.findViewById(R.id.content);
         place = (TextView)dlgView.findViewById(R.id.place);  // 위치 수정받아야함
+        place.setText(getCurrentAddress(new LatLng(addLocation.getLatitude(), addLocation.getLongitude())));
         name = (TextView)dlgView.findViewById(R.id.name);
         link = (TextView)dlgView.findViewById(R.id.link);
         date = (Button)dlgView.findViewById(R.id.date);
@@ -307,13 +322,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     myRef.child(str).child("name").setValue(name.getText().toString());
                     myRef.child(str).child("date").setValue(date.getText().toString());
                     myRef.child(str).child("date2").setValue(date2.getText().toString());
-                    myRef.child(str).child("lat").setValue(location.getLatitude());  // 나중에 수정(일단 현재 위치에 마커 생성하도록 함)
-                    myRef.child(str).child("long").setValue(location.getLongitude());  // 나중에 수정22
+                    myRef.child(str).child("lat").setValue(addLocation.getLatitude());  // 나중에 수정(일단 현재 위치에 마커 생성하도록 함)
+                    myRef.child(str).child("long").setValue(addLocation.getLongitude());  // 나중에 수정22
 
                     Toast.makeText(MapsActivity.this, "등록되었습니다.", Toast.LENGTH_SHORT).show();
                     dlg.dismiss();
 
-                    LatLng m = new LatLng(location.getLatitude(), location.getLongitude());
+                    LatLng m = new LatLng(addLocation.getLatitude(), addLocation.getLongitude());
+                    System.out.println("현복" + m.latitude + "/" + m.longitude);
                     mMap.addMarker(new MarkerOptions().position(m).title(title.getText().toString()).snippet("상세 정보 보기"));
                 }
             }
@@ -365,7 +381,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (locationList.size() > 0 && !recur) {
                 location = locationList.get(locationList.size() - 1);
                 //location = locationList.get(0);
-                recur=true;
                 currentPosition
                         = new LatLng(location.getLatitude(), location.getLongitude());
                 String markerTitle = getCurrentAddress(currentPosition);
@@ -374,9 +389,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.d(TAG, "onLocationResult : " + markerSnippet);
                 //현재 위치에 마커 생성하고 이동
                 setCurrentLocation(location, markerTitle, markerSnippet);
-                mCurrentLocatiion = location;
                 recur=true;
             }
+            mCurrentLocation = location;
+            System.out.println("현재위치" + mCurrentLocation);
         }
     };
 
@@ -622,4 +638,88 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     };
+
+    public double getDistanceBetween(double P1_latitude, double P1_longitude, double P2_latitude, double P2_longitude) {
+        if ((P1_latitude == P2_latitude) && (P1_longitude == P2_longitude)) {
+            return 0;
+        }
+
+        double e10 = P1_latitude * Math.PI / 180;
+        double e11 = P1_longitude * Math.PI / 180;
+        double e12 = P2_latitude * Math.PI / 180;
+        double e13 = P2_longitude * Math.PI / 180;
+
+        /* 타원체 GRS80 */
+        double c16 = 6356752.314140910;
+        double c15 = 6378137.000000000;
+        double c17 = 0.0033528107;
+
+        double f15 = c17 + c17 * c17;
+        double f16 = f15 / 2;
+        double f17 = c17 * c17 / 2;
+        double f18 = c17 * c17 / 8;
+        double f19 = c17 * c17 / 16;
+
+        double c18 = e13 - e11;
+        double c20 = (1 - c17) * Math.tan(e10);
+        double c21 = Math.atan(c20);
+        double c22 = Math.sin(c21);
+        double c23 = Math.cos(c21);
+        double c24 = (1 - c17) * Math.tan(e12);
+        double c25 = Math.atan(c24);
+        double c26 = Math.sin(c25);
+        double c27 = Math.cos(c25);
+
+        double c29 = c18;
+        double c31 = (c27 * Math.sin(c29) * c27 * Math.sin(c29))
+                + (c23 * c26 - c22 * c27 * Math.cos(c29))
+                * (c23 * c26 - c22 * c27 * Math.cos(c29));
+        double c33 = (c22 * c26) + (c23 * c27 * Math.cos(c29));
+        double c35 = Math.sqrt(c31) / c33;
+        double c36 = Math.atan(c35);
+        double c38 = 0;
+        if (c31 == 0) {
+            c38 = 0;
+        } else {
+            c38 = c23 * c27 * Math.sin(c29) / Math.sqrt(c31);
+        }
+
+        double c40 = 0;
+        if ((Math.cos(Math.asin(c38)) * Math.cos(Math.asin(c38))) == 0) {
+            c40 = 0;
+        } else {
+            c40 = c33 - 2 * c22 * c26
+                    / (Math.cos(Math.asin(c38)) * Math.cos(Math.asin(c38)));
+        }
+
+        double c41 = Math.cos(Math.asin(c38)) * Math.cos(Math.asin(c38))
+                * (c15 * c15 - c16 * c16) / (c16 * c16);
+        double c43 = 1 + c41 / 16384
+                * (4096 + c41 * (-768 + c41 * (320 - 175 * c41)));
+        double c45 = c41 / 1024 * (256 + c41 * (-128 + c41 * (74 - 47 * c41)));
+        double c47 = c45
+                * Math.sqrt(c31)
+                * (c40 + c45
+                / 4
+                * (c33 * (-1 + 2 * c40 * c40) - c45 / 6 * c40
+                * (-3 + 4 * c31) * (-3 + 4 * c40 * c40)));
+        double c50 = c17
+                / 16
+                * Math.cos(Math.asin(c38))
+                * Math.cos(Math.asin(c38))
+                * (4 + c17
+                * (4 - 3 * Math.cos(Math.asin(c38))
+                * Math.cos(Math.asin(c38))));
+        double c52 = c18
+                + (1 - c50)
+                * c17
+                * c38
+                * (Math.acos(c33) + c50 * Math.sin(Math.acos(c33))
+                * (c40 + c50 * c33 * (-1 + 2 * c40 * c40)));
+
+        double c54 = c16 * c43 * (Math.atan(c35) - c47);
+
+        // return distance in meter
+        return c54;
+    }
 }

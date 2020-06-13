@@ -174,7 +174,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-/*
+
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -191,7 +191,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });*/
+        });
 
         mMap.setOnInfoWindowClickListener(infoWindowClickListener);
         searchBar.setOnKeyListener(searchAddressListener);

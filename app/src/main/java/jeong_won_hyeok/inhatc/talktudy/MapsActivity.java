@@ -232,12 +232,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     location.setLatitude(marker.getPosition().latitude);
                     location.setLongitude(marker.getPosition().longitude);
                     AddDialog(location);
+                }else {
+                    onInfoWindowClick(marker);
                 }
                 return true;
             }
         });
     }
 
+    public void onInfoWindowClick(final Marker marker) {
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    String tit = child.child("title").getValue().toString();
+                    if (marker.getTitle().equals(tit)) {
+                        String con = child.child("content").getValue().toString();
+                        String p = child.child("place").getValue().toString();
+                        String nm = child.child("name").getValue().toString();
+                        String dt = child.child("date").getValue().toString();
+                        String lin = child.child("link").getValue().toString();
+                        String dt2 = child.child("date2").getValue().toString();
+                        InfoDialog(tit, con, p, nm, lin, dt, dt2);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
     GoogleMap.OnInfoWindowClickListener infoWindowClickListener = new GoogleMap.OnInfoWindowClickListener() {
         @Override
         public void onInfoWindowClick(final Marker marker) {

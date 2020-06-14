@@ -62,7 +62,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -96,6 +100,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private EditText searchBar;
     private Marker addMarker;
     String addMarkerId;
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat ( "yyyy-MM-dd");
+    Date today = new Date();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,14 +190,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (DataSnapshot c : dataSnapshot.getChildren()) {
                     Double lat = Double.parseDouble(c.child("lat").getValue().toString());
                     Double lng = Double.parseDouble(c.child("long").getValue().toString());
-                    if(recur) {
-                        Double lat2 = mCurrentLocation.getLatitude();
-                        Double lng2 = mCurrentLocation.getLongitude();
-                        System.out.println("현복:거리" + getDistanceBetween(lat, lng, lat2, lng2));
+                    Date curtDate = null;
+                    try{
+                        curtDate = dateFormat.parse(c.child("date").getValue().toString());
+                    }catch(ParseException e){
+                        e.getStackTrace();
                     }
-                    String title = c.child("title").getValue().toString();
-                    LatLng m = new LatLng(lat, lng);
-                    mMap.addMarker(new MarkerOptions().position(m).title(title).snippet("상세 보기"));
+                    if(today.compareTo(curtDate)<0) {
+                        if(recur) {
+                            Double lat2 = mCurrentLocation.getLatitude();
+                            Double lng2 = mCurrentLocation.getLongitude();
+                            System.out.println("현복:거리" + getDistanceBetween(lat, lng, lat2, lng2));
+                        }
+                        String title = c.child("title").getValue().toString();
+                        LatLng m = new LatLng(lat, lng);
+                        mMap.addMarker(new MarkerOptions().position(m).title(title).snippet("상세 보기"));
+                    }
                 }
             }
 

@@ -355,23 +355,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Toast.makeText(MapsActivity.this, "모든 항목을 입력해주세요.", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    String str = date.getText().toString()+title.getText().toString();
-                    myRef.child(str).child("title").setValue(title.getText().toString());
-                    myRef.child(str).child("place").setValue(place.getText().toString());
-                    myRef.child(str).child("content").setValue(content.getText().toString());
-                    myRef.child(str).child("link").setValue(link.getText().toString());
-                    myRef.child(str).child("name").setValue(name.getText().toString());
-                    myRef.child(str).child("date").setValue(date.getText().toString());
-                    myRef.child(str).child("date2").setValue(date2.getText().toString());
-                    myRef.child(str).child("lat").setValue(addLocation.getLatitude());  // 나중에 수정(일단 현재 위치에 마커 생성하도록 함)
-                    myRef.child(str).child("long").setValue(addLocation.getLongitude());  // 나중에 수정22
+                    Date curtDate = null;
+                    try{
+                        curtDate = dateFormat.parse(date.getText().toString());
+                    }catch(ParseException e){
+                        e.getStackTrace();
+                    }
+                    if(today.compareTo(curtDate)>0) {
+                        Toast.makeText(MapsActivity.this, "유효하지 않은 날짜 입니다.\n다시 선택해주세요.", Toast.LENGTH_SHORT).show();
+                    }else {
+                        String str = date.getText().toString()+title.getText().toString();
+                        myRef.child(str).child("title").setValue(title.getText().toString());
+                        myRef.child(str).child("place").setValue(place.getText().toString());
+                        myRef.child(str).child("content").setValue(content.getText().toString());
+                        myRef.child(str).child("link").setValue(link.getText().toString());
+                        myRef.child(str).child("name").setValue(name.getText().toString());
+                        myRef.child(str).child("date").setValue(date.getText().toString());
+                        myRef.child(str).child("date2").setValue(date2.getText().toString());
+                        myRef.child(str).child("lat").setValue(addLocation.getLatitude());  // 나중에 수정(일단 현재 위치에 마커 생성하도록 함)
+                        myRef.child(str).child("long").setValue(addLocation.getLongitude());  // 나중에 수정22
 
-                    Toast.makeText(MapsActivity.this, "등록되었습니다.", Toast.LENGTH_SHORT).show();
-                    dlg.dismiss();
+                        Toast.makeText(MapsActivity.this, "등록되었습니다.", Toast.LENGTH_SHORT).show();
+                        dlg.dismiss();
 
-                    LatLng m = new LatLng(addLocation.getLatitude(), addLocation.getLongitude());
-                    System.out.println("현복" + m.latitude + "/" + m.longitude);
-                    mMap.addMarker(new MarkerOptions().position(m).title(title.getText().toString()).snippet("상세 정보 보기"));
+                        LatLng m = new LatLng(addLocation.getLatitude(), addLocation.getLongitude());
+                        System.out.println("현복" + m.latitude + "/" + m.longitude);
+                        mMap.addMarker(new MarkerOptions().position(m).title(title.getText().toString()).snippet("상세 정보 보기"));
+                    }
                 }
             }
         });

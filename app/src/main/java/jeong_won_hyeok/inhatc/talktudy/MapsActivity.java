@@ -33,6 +33,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -319,6 +320,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TextView ok;
         final TextView title, content, place, link, name, date2;
         final Button date;
+
+        final ListView listView;
+        listView = (ListView)dlgView.findViewById(R.id.listView);
+        ListViewAdapter adapter = new ListViewAdapter();
+        Log.i(getPackageName(), listView != null ? "listview is not null!" : "listview is null!");
+        listView.setAdapter(adapter);
+
+        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.icon0), "밥");
+        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.icon1), "택시");
+        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.icon2), "운동");
+        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.icon3), "공부");
+        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.icon4), "영화");
+        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.icon5), "대화");
+        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.icon6), "게임");
+        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.icon7), "기타");
+
 
         ok = (TextView)dlgView.findViewById(R.id.ok_bt);
         title = (TextView)dlgView.findViewById(R.id.title);

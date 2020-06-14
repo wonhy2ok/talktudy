@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jeong_won_hyeok.inhatc.talktudy.CheckableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DaumWebViewActivity">
+    <ImageView
+        android:id="@+id/iconImage"
+        android:layout_width="96px"
+        android:layout_height="96px"
+        android:layout_weight="1"
+        app:srcCompat="@drawable/icon7" />
+
+    <TextView
+        android:id="@+id/iconText"
+        android:layout_width="wrap_content"
+        android:layout_height="96px"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:layout_alignRight="@id/iconCbx"
+        android:layout_weight="8"
+        android:textSize="20sp"
+        android:text="기타" />
+
+    <CheckBox
+        android:id="@+id/iconCbx"
+        android:layout_width="wrap_content"
+        android:layout_height="96px"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:translationX="48px"
+        android:focusable="false"
+        android:clickable="false"
+        android:layout_weight="1" />
+</jeong_won_hyeok.inhatc.talktudy.CheckableLinearLayout>

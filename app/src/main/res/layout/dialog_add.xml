@@ -186,6 +186,13 @@
                 android:gravity="start"
                 android:hint="내용을 입력하세요"
                 android:inputType="textPersonName" />
+
+            <ListView
+                android:id="@+id/listView"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:choiceMode="singleChoice"/>
         </LinearLayout>
 
     </LinearLayout>

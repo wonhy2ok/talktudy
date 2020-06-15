@@ -21,6 +21,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -33,6 +34,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -98,7 +100,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     Boolean recur;
 
-    private EditText searchBar;
+    private ImageView search;
     private Marker addMarker;
     String addMarkerId;
 
@@ -145,8 +147,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        searchBar = (EditText)findViewById(R.id.editText);
-        searchBar.setOnClickListener(new View.OnClickListener() {
+        search = (ImageView)findViewById(R.id.search);
+        search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MapsActivity.this, DaumWebViewActivity.class);
@@ -218,7 +220,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         mMap.setOnInfoWindowClickListener(infoWindowClickListener);
-        searchBar.setOnKeyListener(searchAddressListener);
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
@@ -668,20 +669,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 break;
             case 100: // 주소 선택
-                if (resultCode == RESULT_OK)
-                    searchBar.setText(data.getStringExtra("address"));
-        }
-    }
-
-    public View.OnKeyListener searchAddressListener = new View.OnKeyListener() {
-        @Override
-        public boolean onKey(View view, int i, KeyEvent keyEvent) {
-            final Geocoder geocoder = new Geocoder(MapsActivity.this);
-            switch (i) {
-                case KeyEvent.KEYCODE_ENTER:
+                if (resultCode == RESULT_OK) {
+                    final Geocoder geocoder = new Geocoder(MapsActivity.this);
+                    String address = data.getStringExtra("address");
                     List<Address> list = null;
                     try {
-                        String address = searchBar.getText().toString();
                         list = geocoder.getFromLocationName(address, 10);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -689,24 +681,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     if (list != null) {
                         if (list.size() == 0)
-                            Toast.makeText(MapsActivity.this, "주소 검색 불가능", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MapsActivity.this, "잘못된 주소입니다.", Toast.LENGTH_SHORT).show();
                         else {
-                            Address address = list.get(0);
-                            double latitude = address.getLatitude();
-                            double longitude = address.getLongitude();
-
-                            Toast.makeText(MapsActivity.this, "위도 : " + latitude + " / 경도 : " + longitude, Toast.LENGTH_SHORT).show();
+                            Address addr = list.get(0);
+                            double latitude = addr.getLatitude();
+                            double longitude = addr.getLongitude();
 
                             LatLng latLng = new LatLng(latitude, longitude);
                             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
                             mMap.moveCamera(cameraUpdate);
                         }
                     }
-                default:
-                    return false;
-            }
+                }
         }
-    };
+    }
 
     public double getDistanceBetween(double P1_latitude, double P1_longitude, double P2_latitude, double P2_longitude) {
         if ((P1_latitude == P2_latitude) && (P1_longitude == P2_longitude)) {

@@ -22,7 +22,6 @@ public class DaumWebViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daum_web_view);
 
-        searchBar = (EditText)findViewById(R.id.editText);
         webView   = (WebView)findViewById(R.id.webView);
 
         // 핸들러를 통한 JavaScript 이벤트 반응
@@ -46,7 +45,7 @@ public class DaumWebViewActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient());
 
         // webview url load
-        webView.loadUrl("http://192.168.219.104:1234/qwer.php");
+        webView.loadUrl("http://192.168.219.103:1234/qwer.php");
     }
 
     private class AndroidBridge {

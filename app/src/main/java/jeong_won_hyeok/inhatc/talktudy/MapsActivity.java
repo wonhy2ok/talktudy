@@ -52,6 +52,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -106,6 +107,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     SimpleDateFormat dateFormat = new SimpleDateFormat ( "yyyy-MM-dd");
     Date today = new Date();
+
+    CircleOptions circleOptions;
+    Circle circle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -459,7 +463,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.d(TAG, "onLocationResult : " + markerSnippet);
                 //현재 위치에 마커 생성하고 이동
                 setCurrentLocation(location, markerTitle, markerSnippet);
-                recur=true;
+                //recur=true;
             }
             mCurrentLocation = location;
             System.out.println("현재위치" + mCurrentLocation);
@@ -555,13 +559,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
         mMap.moveCamera(cameraUpdate);
 
-        CircleOptions circle = new CircleOptions().center(currentLatLng)
-                .radius(1000)      //반지름 단위 : m
-                .strokeWidth(0f)  //선너비 0f : 선없음
-                .fillColor(Color.parseColor("#331187cf")); //배경색
-
-        mMap.addCircle(circle);
-
+        if(circleOptions == null) {
+            circleOptions = new CircleOptions().center(currentLatLng)
+                    .radius(1000)      //반지름 단위 : m
+                    .strokeWidth(0f)  //선너비 0f : 선없음
+                    .fillColor(Color.parseColor("#331187cf")); //배경색
+            circle = mMap.addCircle(circleOptions);
+        }
+        circle.setCenter(currentLatLng);
     }
 
     public void setDefaultLocation() {

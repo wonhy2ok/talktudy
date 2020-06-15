@@ -197,15 +197,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }catch(ParseException e){
                         e.getStackTrace();
                     }
-                    if(today.compareTo(curtDate)<0) {
-                        if(recur) {
-                            Double lat2 = mCurrentLocation.getLatitude();
-                            Double lng2 = mCurrentLocation.getLongitude();
-                            System.out.println("현복:거리" + getDistanceBetween(lat, lng, lat2, lng2));
-                        }
+                    if(today.compareTo(curtDate) <= 0) {
+                        int[] icons = {R.drawable.icon0, R.drawable.icon1, R.drawable.icon2, R.drawable.icon3, R.drawable.icon4, R.drawable.icon5, R.drawable.icon6, R.drawable.icon7};
                         String title = c.child("title").getValue().toString();
+                        int number = Integer.parseInt(c.child("icon").getValue().toString());
+                        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(icons[number]);
+                        Bitmap b = bitmapdraw.getBitmap();
+                        Bitmap smallMarker;
+                        smallMarker = Bitmap.createScaledBitmap(b, 72, 96, false);
                         LatLng m = new LatLng(lat, lng);
-                        mMap.addMarker(new MarkerOptions().position(m).title(title).snippet("상세 보기"));
+                        mMap.addMarker(new MarkerOptions().position(m).title(title).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)).snippet("상세 보기"));
                     }
                 }
             }
@@ -324,7 +325,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final ListView listView;
         listView = (ListView)dlgView.findViewById(R.id.listView);
         ListViewAdapter adapter = new ListViewAdapter();
-        Log.i(getPackageName(), listView != null ? "listview is not null!" : "listview is null!");
         listView.setAdapter(adapter);
 
         adapter.addItem(ContextCompat.getDrawable(this, R.drawable.icon0), "밥");
@@ -391,6 +391,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         myRef.child(str).child("date2").setValue(date2.getText().toString());
                         myRef.child(str).child("lat").setValue(addLocation.getLatitude());  // 나중에 수정(일단 현재 위치에 마커 생성하도록 함)
                         myRef.child(str).child("long").setValue(addLocation.getLongitude());  // 나중에 수정22
+                        myRef.child(str).child("icon").setValue(listView.getCheckedItemPosition());
 
                         Toast.makeText(MapsActivity.this, "등록되었습니다.", Toast.LENGTH_SHORT).show();
                         dlg.dismiss();

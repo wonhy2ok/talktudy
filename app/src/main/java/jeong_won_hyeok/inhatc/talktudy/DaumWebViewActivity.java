@@ -45,7 +45,7 @@ public class DaumWebViewActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient());
 
         // webview url load
-        webView.loadUrl("http://192.168.219.103:1234/qwer.php");
+        webView.loadUrl("http://112.154.166.107:1234/qwer.php");
     }
 
     private class AndroidBridge {

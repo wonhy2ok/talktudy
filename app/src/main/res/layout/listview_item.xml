@@ -5,32 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DaumWebViewActivity">
+
     <ImageView
         android:id="@+id/iconImage"
-        android:layout_width="96px"
-        android:layout_height="96px"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_weight="1"
         app:srcCompat="@drawable/icon7" />
 
     <TextView
         android:id="@+id/iconText"
         android:layout_width="wrap_content"
-        android:layout_height="96px"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:layout_alignRight="@id/iconCbx"
+        android:layout_height="48dp"
+        android:layout_alignParentTop="true"
         android:layout_weight="8"
-        android:textSize="20sp"
-        android:text="기타" />
+        android:text="@string/icon0"
+        android:textAlignment="center"
+        android:textSize="20sp" />
 
     <CheckBox
         android:id="@+id/iconCbx"
         android:layout_width="wrap_content"
-        android:layout_height="96px"
+        android:layout_height="48dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:translationX="48px"
+        android:layout_weight="1"
         android:focusable="false"
-        android:clickable="false"
-        android:layout_weight="1" />
+        android:clickable="false" />
 </jeong_won_hyeok.inhatc.talktudy.CheckableLinearLayout>

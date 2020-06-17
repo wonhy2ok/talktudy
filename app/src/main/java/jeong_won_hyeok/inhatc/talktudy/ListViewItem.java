@@ -9,7 +9,7 @@ public class ListViewItem {
     public void setIcon(Drawable icon) {
         this.icon = icon;
     }
-    public void setTitle(String Title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 

@@ -525,6 +525,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     latlng.latitude,
                     latlng.longitude,
                     1);
+            if (addresses == null || addresses.size() == 0) {
+                addresses = geocoder.getFromLocation(
+                        latlng.latitude,
+                        latlng.longitude,
+                        2);
+            }
         } catch (IOException ioException) {
             //네트워크 문제
             Toast.makeText(this, "지오코더 서비스 사용불가", Toast.LENGTH_LONG).show();

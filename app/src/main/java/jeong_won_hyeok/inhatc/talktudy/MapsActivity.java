@@ -402,8 +402,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         dlg.dismiss();
 
                         LatLng m = new LatLng(addLocation.getLatitude(), addLocation.getLongitude());
-                        System.out.println("현복" + m.latitude + "/" + m.longitude);
-                        mMap.addMarker(new MarkerOptions().position(m).title(title.getText().toString()).snippet("상세 정보 보기"));
+                        int[] icons = {R.drawable.icon0, R.drawable.icon1, R.drawable.icon2, R.drawable.icon3, R.drawable.icon4, R.drawable.icon5, R.drawable.icon6, R.drawable.icon7};
+                        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(icons[listView.getCheckedItemPosition()]);
+                        Bitmap b = bitmapdraw.getBitmap();
+                        Bitmap smallMarker;
+                        smallMarker = Bitmap.createScaledBitmap(b, 72, 96, false);
+                        mMap.addMarker(new MarkerOptions().position(m).title(title.getText().toString()).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)).snippet("상세 정보 보기"));
                     }
                 }
             }

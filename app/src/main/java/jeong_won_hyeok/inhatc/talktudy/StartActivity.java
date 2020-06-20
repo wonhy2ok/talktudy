@@ -24,6 +24,6 @@ public class StartActivity extends Activity {
                 startActivity(intent);
                 finish();
             }
-        }, 5000);
+        }, 1500);
     }
 }

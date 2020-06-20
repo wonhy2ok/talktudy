@@ -2,6 +2,7 @@ package jeong_won_hyeok.inhatc.talktudy;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -10,10 +11,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -22,15 +30,20 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.Image;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -69,6 +82,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -111,6 +125,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     CircleOptions circleOptions;
     Circle circle;
 
+    static ArrayList<String> placeList = new ArrayList<String>();
+    static ArrayList<LatLng> alarmList = new ArrayList<LatLng>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,14 +136,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         backPressHandler = new BackPressHandler(this);
         myRef = database.getReference("list");
         recur=false;
-        /*
+
         add=(FloatingActionButton)findViewById(R.id.add);
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddDialog(location);
+                Intent intent = new Intent(MapsActivity.this, AlertList.class);
+                startActivity(intent);
             }
-        });*/
+        });
+        /*
+        // 집중모드는 역사속으로
         mode=(FloatingActionButton)findViewById(R.id.mode);
         mode.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,6 +155,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivity(mode1);
             }
         });
+        */
 
         // 추가
         // https://webnautes.tistory.com/1249
@@ -275,7 +296,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         String dt = child.child("date").getValue().toString();
                         String lin = child.child("link").getValue().toString();
                         String dt2 = child.child("date2").getValue().toString();
-                        InfoDialog(tit, con, p, nm, lin, dt, dt2);
+                        LatLng latlng = marker.getPosition();
+                        InfoDialog(tit, con, p, nm, lin, dt, dt2, latlng);
                     }
                 }
             }
@@ -301,7 +323,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             String dt = child.child("date").getValue().toString();
                             String lin = child.child("link").getValue().toString();
                             String dt2 = child.child("date2").getValue().toString();
-                            InfoDialog(tit, con, p, nm, lin, dt, dt2);
+                            LatLng latlng = marker.getPosition();
+                            InfoDialog(tit, con, p, nm, lin, dt, dt2, latlng);
                         }
                     }
                 }
@@ -416,14 +439,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dlg.show();
     }
 
-    public void InfoDialog(String tit, String con, String p, String nm, String lin, String dt, String dt2) {
+    public void InfoDialog(String tit, final String con, String p, String nm, String lin, String dt, String dt2, final LatLng latLngInfo) {
         View dlgView = View.inflate(this,R.layout.dialog_info,null);
         final Dialog dlg = new Dialog(this);
         dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dlg.setContentView(dlgView);
-        TextView ok;
+        TextView ok, push;
         final TextView title, content, place, link, name, date, date2;
 
+        push = (TextView)dlgView.findViewById(R.id.push_bt);
         ok = (TextView)dlgView.findViewById(R.id.ok_bt);
         title = (TextView)dlgView.findViewById(R.id.title);
         content = (TextView)dlgView.findViewById(R.id.content);
@@ -440,6 +464,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         link.setText(lin);
         date.setText(dt);
         date2.setText(dt2);
+
+        push.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 푸시 알림 설정 하기
+                placeList.add((String)place.getText());
+                alarmList.add(latLngInfo);
+//                AlertReceiver receiver = new AlertReceiver();
+//                IntentFilter filter = new IntentFilter("jeong_won_hyeok.inhatc.talktudy.alert");
+//                registerReceiver(receiver, filter);
+//
+//                Intent intent = new Intent("jeong_won_hyeok.inhatc.talktudy.alert");
+//                PendingIntent proximityIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
+//
+//                try {
+//                    locManager.addProximityAlert(latLngInfo.latitude, latLngInfo.longitude, 20, -1, proximityIntent);
+//                } catch (SecurityException e) {
+//                    e.printStackTrace();
+//                }
+                Toast.makeText(getApplicationContext(), "알림이 등록 되었습니다.", Toast.LENGTH_SHORT).show();
+                dlg.dismiss();
+            }
+        });
 
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -468,6 +515,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //현재 위치에 마커 생성하고 이동
                 setCurrentLocation(location, markerTitle, markerSnippet);
                 //recur=true;
+
+                // 알림 범위 내에 왔음을 감지하기
+                if (isAlert(currentPosition)) alert();
             }
             mCurrentLocation = location;
             System.out.println("현재위치" + mCurrentLocation);
@@ -709,6 +759,66 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
         }
+    }
+
+    public boolean isAlert(LatLng latLng) {
+        double distance;
+
+        for(LatLng a : alarmList) {
+            distance = getDistanceBetween(latLng.latitude, latLng.longitude, a.latitude, a.longitude);
+            if (distance < 500) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void alert() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder builder= null;
+
+        // API26이상은 NotificationChannel 필수
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            String channelID="알림 설정"; //알림채널 식별자
+            String channelName="알림 설정"; //알림채널의 이름(별명)
+
+            NotificationChannel channel= new NotificationChannel(channelID,channelName,NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+            builder=new NotificationCompat.Builder(this, channelID);
+        } else {
+            builder= new NotificationCompat.Builder(this, null);
+        }
+        builder.setSmallIcon(android.R.drawable.ic_menu_view);
+
+        builder.setContentTitle("근처에 도착하였습니다.");
+        builder.setContentText("모임 장소가 맞는지 한번 더 확인해주세요!");
+
+        // 큰 이미지
+        Bitmap bitmap= BitmapFactory.decodeResource(getResources(),R.drawable.ic_launcher_background);
+        builder.setLargeIcon(bitmap);
+
+        // 클릭 시 수행작업
+        Intent intent = new Intent(this, MapsActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
+
+        // 클릭 시 알림 제거
+        builder.setAutoCancel(true);
+
+        // 알림 사운드
+        Uri soundUri = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION);
+        builder.setSound(soundUri);
+
+        // 진동 효과
+        builder.setVibrate(new long[]{1000, 1000});
+
+        Notification notification=builder.build();
+
+        // 알림(Notify) 요청
+        notificationManager.notify(1, notification);
+
+        // 요청 시 사용한 번호의 알람 제거
+        //notificationManager.cancel(1);
     }
 
     public double getDistanceBetween(double P1_latitude, double P1_longitude, double P2_latitude, double P2_longitude) {

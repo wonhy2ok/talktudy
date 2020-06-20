@@ -617,7 +617,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markerOptions.draggable(true);
         //currentMarker = mMap.addMarker(markerOptions);
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
-        mMap.moveCamera(cameraUpdate);
+        //mMap.moveCamera(cameraUpdate);
 
         if(circleOptions == null) {
             circleOptions = new CircleOptions().center(currentLatLng)

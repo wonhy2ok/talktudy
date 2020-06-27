@@ -514,7 +514,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.d(TAG, "onLocationResult : " + markerSnippet);
                 //현재 위치에 마커 생성하고 이동
                 setCurrentLocation(location, markerTitle, markerSnippet);
-                //recur=true;
+                if(!recur) {
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentPosition);
+                    mMap.moveCamera(cameraUpdate);
+                }
+                recur=true;
 
                 // 알림 범위 내에 왔음을 감지하기
                 if (isAlert(currentPosition)) alert();
@@ -616,8 +620,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markerOptions.snippet(markerSnippet);
         markerOptions.draggable(true);
         //currentMarker = mMap.addMarker(markerOptions);
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
-        //mMap.moveCamera(cameraUpdate);
 
         if(circleOptions == null) {
             circleOptions = new CircleOptions().center(currentLatLng)

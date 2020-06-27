@@ -32,20 +32,6 @@
         map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintEnd_toEndOf="parent" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/mode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:clickable="true"
-        map:borderWidth="0dp"
-        android:backgroundTint="@color/colorPrimaryDark"
-        map:fabSize="mini"
-        map:layout_constraintBottom_toTopOf="@+id/add"
-        map:layout_constraintEnd_toEndOf="@+id/add"
-        map:layout_constraintStart_toStartOf="@+id/add"
-        map:srcCompat="@android:drawable/ic_menu_mylocation" />
-
     <ImageView
         android:id="@+id/search"
         android:layout_width="20dp"

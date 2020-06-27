@@ -7,8 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/layout_bg"
-        android:backgroundTint="#fff"
+        android:background="#F1F1F1"
         android:padding="20dp"
         android:orientation="vertical">
 
@@ -36,8 +35,7 @@
                 android:layout_width="100dp"
                 android:textStyle="bold"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="모집 제목" />
+                android:text="모    집    제    목" />
 
             <EditText
                 android:id="@+id/title"
@@ -45,7 +43,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="제목을 입력하세요"
                 android:inputType="textPersonName" />
         </LinearLayout>
 
@@ -58,9 +55,8 @@
                 android:id="@+id/textView2"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:textStyle="bold"
-                android:text="주최자" />
+                android:text="주        최        자"/>
 
             <EditText
                 android:id="@+id/name"
@@ -68,7 +64,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="여기에 입력하세요"
                 android:inputType="textPersonName" />
         </LinearLayout>
 
@@ -82,8 +77,7 @@
                 android:textStyle="bold"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="장소" />
+                android:text="장                  소" />
 
             <EditText
                 android:id="@+id/place"
@@ -91,7 +85,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="여기에 입력하세요"
                 android:inputType="textPersonName" />
         </LinearLayout>
 
@@ -105,15 +98,16 @@
                 android:layout_width="100dp"
                 android:textStyle="bold"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="일시" />
+                android:text="날                  짜" />
 
             <Button
                 android:id="@+id/date"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="날짜를 선택하세요"/>
+                android:layout_height="35dp"
+                android:background="#00FF0000"
+                android:drawableLeft="@drawable/ic_calendar"
+                android:paddingLeft="110dp"/>
 
         </LinearLayout>
 
@@ -126,16 +120,14 @@
                 android:id="@+id/textView8"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="일정"
+                android:text="시                  간"
                 android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/date2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="날짜를 선택하세요" />
+                android:layout_weight="1" />
         </LinearLayout>
 
         <LinearLayout
@@ -148,8 +140,7 @@
                 android:layout_width="100dp"
                 android:textStyle="bold"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="오픈카톡 주소" />
+                android:text="오    픈    카    톡"/>
 
             <EditText
                 android:id="@+id/link"
@@ -157,7 +148,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="여기에 입력하세요"
+                android:hint="http://open.kakao.o/"
                 android:inputType="textPersonName" />
         </LinearLayout>
 
@@ -172,7 +163,7 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="   내용"
+                android:text="내                  용"
                 android:textStyle="bold" />
 
             <EditText
@@ -184,7 +175,7 @@
                 android:background="#fff"
                 android:ems="10"
                 android:gravity="start"
-                android:hint="내용을 입력하세요"
+                android:hint="모임에 대해 설명을 해주세요."
                 android:inputType="textPersonName" />
 
             <ListView
@@ -211,9 +202,10 @@
             android:layout_weight="1"
             android:gravity="center"
             android:textColor="#fff"
+            android:background="#476267"
             android:textStyle="bold"
             android:padding="20dp"
-            android:text="등록하기" />
+            android:text="Posting" />
 
     </LinearLayout>
 </LinearLayout>

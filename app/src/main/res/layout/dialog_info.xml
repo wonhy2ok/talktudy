@@ -7,8 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/layout_bg"
-        android:backgroundTint="#fff"
+        android:background="#F1F1F1"
         android:padding="20dp"
         android:orientation="vertical">
 
@@ -35,15 +34,14 @@
                 android:id="@+id/textView2"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="주최자"
+                android:text="주       최      자"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="이름"
+                android:text="ex) 인하공"
                 android:textColor="#111"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -57,15 +55,14 @@
                 android:id="@+id/textView3"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="장소"
+                android:text="장                 소"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/place"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="장소"
+                android:text="ex) 인하공업전문대학"
                 android:textColor="#111"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -79,15 +76,14 @@
                 android:id="@+id/textView"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="일시"
+                android:text="일                 시"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="일시"
+                android:text="ex) 2020.06.06"
                 android:textColor="#111"
                 android:textStyle="bold" />
 
@@ -102,15 +98,14 @@
                 android:id="@+id/textView5"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="일정"
+                android:text="시                 간"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/date2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="웅앵"
+                android:text="ex) PM 08:00"
                 android:textColor="#111"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -124,8 +119,7 @@
                 android:id="@+id/textView6"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="오픈카톡 주소"
+                android:text="오   픈   카   톡"
                 android:textStyle="bold" />
 
             <TextView
@@ -133,7 +127,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#111"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:text="http://open.kakao.o/"
+                android:autoLink="all"/>
         </LinearLayout>
 
         <LinearLayout
@@ -144,7 +140,7 @@
 
             <TextView
                 android:id="@+id/content"
-                android:layout_width="match_parent"
+                android:layout_width="1000dp"
                 android:layout_height="200dp"
                 android:background="#fff"
                 android:gravity="start"
@@ -169,8 +165,8 @@
             android:layout_weight="1"
             android:gravity="center"
             android:padding="20dp"
-            android:background="@color/colorAccent"
-            android:text="알림"
+            android:background="#684762"
+            android:text="notice"
             android:textColor="#fff"
             android:textStyle="bold" />
 
@@ -181,8 +177,9 @@
             android:layout_weight="1"
             android:gravity="center"
             android:padding="20dp"
-            android:text="닫기"
+            android:text="close"
             android:textColor="#fff"
+            android:background="#476267"
             android:textStyle="bold" />
 
     </LinearLayout>

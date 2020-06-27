@@ -21,32 +21,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-
         <Button
             android:id="@+id/alert_all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
             android:layout_weight="1"
             android:background="#555"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:text="모두 선택"
             android:textColor="#fff"
-            android:textStyle="bold"
-            android:padding="20dp"
-            android:textSize="15dp"
-            android:text="모두 선택" />
-
+            android:drawableLeft="@drawable/ic_choose"
+            android:paddingLeft="30dp"/>
         <Button
             android:id="@+id/alert_del"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
             android:layout_weight="1"
-            android:gravity="center"
-            android:background="#E33B3B"
-            android:padding="20dp"
-            android:textSize="15dp"
-            android:text="삭제"
+            android:background="#684762"
+            android:src="@drawable/ic_trashcan"
+            android:textSize="20dp"
+            android:text="Delete"
             android:textColor="#fff"
-            android:textStyle="bold" />
-
+            android:drawableLeft="@drawable/ic_trashcan"
+            android:paddingLeft="30dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -64,9 +62,10 @@
         android:layout_weight="1"
         android:gravity="center"
         android:padding="20dp"
-        android:text="닫기"
         android:textSize="20dp"
+        android:text="Close"
         android:textColor="#fff"
+        android:background="#476267"
         android:textStyle="bold" />
 
 </LinearLayout>

@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -36,6 +37,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.KeyEvent;
@@ -77,6 +79,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -180,6 +185,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivityForResult(intent, 100);
             }
         });
+
+        // 저장한 알람 리스트 가져오기
+        placeList = getStringArrayList("place");
+        setStringArrayListToLatLngArrayList(getStringArrayList("alarm"));
     }
 
     @Override
@@ -571,6 +580,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // 어플 종료시 알람 리스트 저장
+        if(placeList != null) {
+            setStringArrayList("place",placeList);
+            setStringArrayList("alarm",getLatLngArrayListToStringArrayList(alarmList));
+        }
+
+    }
+
     public String getCurrentAddress(LatLng latlng) {
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         List<Address> addresses;
@@ -821,6 +842,86 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // 요청 시 사용한 번호의 알람 제거
         //notificationManager.cancel(1);
+    }
+
+    // 알람 리스트 저장 메소드
+    public void setStringArrayList(String key, ArrayList<String> list) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = sp.edit();    // 에디터 생성
+        JSONArray jsonArray = new JSONArray();          // JSONArray 생성 - 여기에 Arraylist를 담음
+
+        for(int i=0; i<list.size(); i++) {
+            jsonArray.put(list.get(i));
+        }
+
+        if(!list.isEmpty()) {
+            editor.putString(key, jsonArray.toString());
+        } else {
+            editor.putString(key, null);
+        }
+        editor.apply();
+//        editor.commit();
+    }
+
+    // 알람 리스트 불러오기 메소드
+    public ArrayList<String> getStringArrayList(String key) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String json = sp.getString(key, null);
+        ArrayList<String> list = new ArrayList<>();
+
+        if(json != null) {
+            try {
+                JSONArray jsonArray = new JSONArray(json);
+
+                for(int i=0; i<jsonArray.length(); i++){
+                    String data = jsonArray.optString(i);
+                    list.add(data);
+                }
+            } catch(JSONException e) {
+                Log.e(TAG, e.getMessage());
+            }
+        }
+        return list;
+    }
+
+    // 알람 리스트 StringArrayList 인수로 받아서 LatLng 형태로 변환한 뒤 LatLngArrayList인  alarmList에 추가하기
+    public void setStringArrayListToLatLngArrayList(ArrayList<String> stringArrayList) {
+        if(stringArrayList != null) {
+            for(int i=0; i<stringArrayList.size(); i++) {
+                LatLng data = getStringToLatLng(stringArrayList.get(i));
+                alarmList.add(data);
+            }
+        }
+    }
+
+    // 알람 리스트 LatLngArrayList 인수로 받아서 String 형태로 변환한 뒤 StringArrayList로 리턴하기
+    public ArrayList<String> getLatLngArrayListToStringArrayList(ArrayList<LatLng> latlngArrayList) {
+        ArrayList<String> result = new ArrayList<>();
+
+        if(latlngArrayList != null) {
+            for(int i=0; i<latlngArrayList.size(); i++) {
+                String data = getLatLngToString(latlngArrayList.get(i));
+                result.add(data);
+            }
+        }
+        return result;
+    }
+
+    // LatLng 형태를 인수로 받아서 String 형태로 변환하고 리턴하기
+    public String getLatLngToString(LatLng latlng) {
+        Double lat = latlng.latitude;
+        Double lng = latlng.longitude;
+        String result = lat.toString() + "," + lng.toString();
+
+        return result;
+    }
+
+    // String 형태를 인수로 받아서 LatLng 형태로 변환하고 리턴하기
+    public LatLng getStringToLatLng(String string) {
+        String[] latlng = string.split(",");
+        LatLng result = new LatLng(Double.parseDouble(latlng[0]),Double.parseDouble(latlng[1]));
+
+        return result;
     }
 
     public double getDistanceBetween(double P1_latitude, double P1_longitude, double P2_latitude, double P2_longitude) {

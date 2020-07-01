@@ -188,7 +188,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // 저장한 알람 리스트 가져오기
         placeList = getStringArrayList("place");
-        setStringArrayListToLatLngArrayList(getStringArrayList("alarm"));
+        setStringArrayListToLatLngArrayList(getStringArrayList("alarmm"));
     }
 
     @Override
@@ -528,12 +528,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.moveCamera(cameraUpdate);
                 }
                 recur=true;
-
-                // 알림 범위 내에 왔음을 감지하기
-                if (isAlert(currentPosition)) alert();
             }
             mCurrentLocation = location;
             System.out.println("현재위치" + mCurrentLocation);
+            System.out.println("placeList : " + placeList);
+            System.out.println("alarmList : " + alarmList);
+            // 알림 범위 내에 왔음을 감지하기
+            if (isAlert(currentPosition)) alert();
         }
     };
 
@@ -587,7 +588,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // 어플 종료시 알람 리스트 저장
         if(placeList != null) {
             setStringArrayList("place",placeList);
-            setStringArrayList("alarm",getLatLngArrayListToStringArrayList(alarmList));
+            setStringArrayList("alarmm",getLatLngArrayListToStringArrayList(alarmList));
         }
 
     }

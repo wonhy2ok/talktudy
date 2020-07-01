@@ -73,6 +73,7 @@ public class AlertList extends AppCompatActivity {
                 for (int i=count-1; i>=0; i--) {
                     if (checkedItems.get(i)) {
                         items.remove(i);
+                        placeList.remove(i);
                         alarmList.remove(i);
                     }
                 }
